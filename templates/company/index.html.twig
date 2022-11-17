@@ -22,7 +22,7 @@
 
                     {% if (is_granted('ROLE_WORKER')) %}
                         <br>
-                        <a href="{{ path('app_resume_like', {'id' :  resume.id, 'type' : 'like'}) }}">Отправить
+                        <a href="{{ path('app_company_invite', {'id' : company.id}) }}">Отправить
                             резюме</a>
                     {% endif %}
                 </p>

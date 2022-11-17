@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Company;
+use App\Entity\Operation;
 use App\Form\CompanyType;
 use App\Repository\CompanyRepository;
+use App\Repository\OperationRepository;
+use App\Repository\ResumeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,5 +73,44 @@ class CompanyController extends AbstractController
         }
 
         return $this->redirectToRoute('app_company_my');
+    }
+
+
+    #[Route('/company/{id}', name: 'app_company_invite')]
+    public function invite(
+        CompanyRepository $companyRepository,
+        ResumeRepository $resumeRepository,
+        EntityManagerInterface $em,
+        OperationRepository $operationRepository,
+        int $id
+    ): Response {
+        if ($this->isGranted('ROLE_WORKER')) {
+            if (!$resume = $resumeRepository->findOneBy(['user' => $this->getUser(), 'deleted' => null])) {
+                return $this->redirectToRoute('app_resume_my');
+            }
+            /**
+             * @var Company $company
+             */
+            if ($company = $companyRepository->find($id)) {
+                if ($company->isDeleted() == null) {
+                    if (!$operationRepository->findOneBy(
+                        ['initiator' => $this->getUser(), 'company' => $company, 'type' => 'invite']
+                    )) {
+                        $operation = new Operation();
+                        $operation->setCompany($company);
+                        $operation->setResume($resume);
+                        $operation->setType('invite');
+                        $operation->setInitiator($this->getUser()->getId());
+                        $operation->setCreatedAt(\date_create_immutable());
+                        $em->persist($operation);
+                        $em->flush();
+                    } else {
+                        throw new \Exception('Не, уже отправлял');
+                    }
+                }
+            }
+        }
+
+        return $this->redirectToRoute('app_company_list');
     }
 }
