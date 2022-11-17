@@ -15,6 +15,13 @@ class CheckDeviceAuthenticator extends AbstractAuthenticator
 
     public function supports(Request $request): ?bool
     {
+        if ($request->getSession()->has('PHPSESSID')) {
+            if ($request->getSession()->get('X-AUTH-DEVICE-TOKEN') != md5(
+                    $request->getClientIp() . $request->headers->get('user_agent')
+                )) {
+                $request->getSession()->invalidate();
+            }
+        }
         return false;
     }
 
@@ -26,11 +33,20 @@ class CheckDeviceAuthenticator extends AbstractAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         // TODO: Implement onAuthenticationSuccess() method.
+        return null;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        // TODO: Implement onAuthenticationFailure() method.
+        $data = [
+            // you may want to customize or obfuscate the message first
+            'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
+
+            // or to translate this message
+            // $this->translator->trans($exception->getMessageKey(), $exception->getMessageData())
+        ];
+
+        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
     }
 
 //    public function start(Request $request, AuthenticationException $authException = null): Response

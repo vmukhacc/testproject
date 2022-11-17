@@ -41,6 +41,11 @@ class MainAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        $request->getSession()->set(
+            'X-AUTH-DEVICE-TOKEN',
+            md5($request->getClientIp() . $request->headers->get('user_agent'))
+        );
+
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
