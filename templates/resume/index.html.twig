@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Все доступные резюме{% endblock %}
+
+{% block body %}
+
+    <h2 class="mb-5">
+        Все доступные резюме
+    </h2>
+
+
+    {% for resume in allresume %}
+        <div class="card border-dark mb-3">
+            <div class="card-header">{{ resume.createdAt }}</div>
+            <div class="card-body text-dark">
+                <h5 class="card-title">{{ resume.name }}</h5>
+                <p class="card-text">{{ resume.body }}
+                    {% if (resume.file) %}
+                        <br>
+                        <a href="/document/{{ resume.file }}" target="_blank">Скачать документ PDF</a>
+                    {% endif %}
+
+                    {% if (is_granted('ROLE_COMPANY')) %}
+                        <br>
+                        <a href="{{ path('app_resume_like', {'id' :  resume.id, 'type' : 'like'}) }}">Лайк</a>
+                        /
+                        <a href="{{ path('app_resume_like', {'id' :  resume.id, 'type' : 'dislike'}) }}">Дизлайк</a>
+
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    {% endfor %}
+
+
+{% endblock %}

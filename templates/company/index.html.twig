@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Все доступные компании{% endblock %}
+
+{% block body %}
+
+    <h2 class="mb-5">
+        Все доступные компании
+    </h2>
+
+
+    {% for company in allcompany %}
+        <div class="card border-dark mb-3">
+            <div class="card-header">{{ company.createdAt }}</div>
+            <div class="card-body text-dark">
+                <h5 class="card-title">{{ company.name }}</h5>
+                <p class="card-text">{{ company.body }}<br>
+                    <b>Номер телефона:</b>{{ company.phone }}<br>
+                    <b>Адрес:</b>{{ company.address }}<br>
+                    <b>Сайт:</b>{{ company.link }}<br>
+
+
+                    {% if (is_granted('ROLE_WORKER')) %}
+                        <br>
+                        <a href="{{ path('app_resume_like', {'id' :  resume.id, 'type' : 'like'}) }}">Отправить
+                            резюме</a>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    {% endfor %}
+
+
+{% endblock %}

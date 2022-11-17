@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Все доступные резюме{% endblock %}
+
+{% block body %}
+
+    <h2 class="mb-5">
+        Все доступные резюме
+    </h2>
+
+
+    {% for resume in allresume %}
+        <div class="card border-dark mb-3">
+            <div class="card-header">{{ resume.createdAt }}</div>
+            <div class="card-body text-dark">
+                <h5 class="card-title">{{ resume.name }} <b style="color: orange">{{ resume.likeCount }} лайк</b></h5>
+                <p class="card-text">{{ resume.body }}
+                    {% if (resume.file) %}
+                        <br>
+                        <a href="/document/{{ resume.file }}" target="_blank">Скачать документ PDF</a>
+                    {% endif %}
+
+
+                </p>
+            </div>
+        </div>
+    {% endfor %}
+
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Создание резюме{% endblock %}
+
+{% block body %}
+    {% if form.vars.data %}
+        <h2 class="mb-5">
+            Редактировать резюме
+        </h2>
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {% if form.vars.data.file %}
+            Файл загружен: <a href="./document/{{ form.vars.data.file }}" target="_blank">Просмотреть</a> <br>
+        {% endif %}
+        <button class="btn btn-lg btn-primary" type="submit">
+            Изменить резюме
+        </button>
+        <a class="btn btn-lg btn-danger" href="{{ path('app_resume_delete', {'id' :  form.vars.data.id}) }}">
+            Удалить резюме
+        </a>
+    {% else %}
+        <h2 class="mb-5">
+            Создание резюме
+        </h2>
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-lg btn-primary" type="submit">
+            Создать
+        </button>
+    {% endif %}
+
+    {{ form_end(form) }}
+
+{% endblock %}
